@@ -1,44 +1,34 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box } from '@mui/material';
+import { ref, push } from 'firebase/database';
+import { db } from '../firebase';
 
-const UserForm = ({ addUser }) => {
+const UserForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) {
-      alert('Por favor, preencha todos os campos.');
-      return;
-    }
-    addUser({ name, email });
+    if (!name || !email) return;
+
+    const userRef = ref(db, 'usuarios');
+    push(userRef, { name, email });
+
     setName('');
     setEmail('');
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate>
-      <TextField
-        fullWidth
-        label="Nome"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        margin="normal"
-        required
-      />
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-        Cadastrar
-      </Button>
-    </Box>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Nome:</label><br />
+        <input value={name} onChange={(e) => setName(e.target.value)} required />
+      </div>
+      <div>
+        <label>Email:</label><br />
+        <input value={email} onChange={(e) => setEmail(e.target.value)} required />
+      </div>
+      <button type="submit" style={{ marginTop: '10px' }}>Cadastrar</button>
+    </form>
   );
 };
 
